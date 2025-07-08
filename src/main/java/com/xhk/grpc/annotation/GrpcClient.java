@@ -8,5 +8,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GrpcClient {
+    String url() default "";
+
     Class<?> stub();
+
+    Class<? extends io.grpc.ClientInterceptor>[] interceptors() default {};
 }

@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "grpc.clients",
+      "type": "java.util.Map<java.lang.String, com.xhk.grpc.config.GrpcClientProperties>",
+      "description": "Map of gRPC client configuration per interface."
+    },
+    {
+      "name": "grpc.clients.*.host",
+      "type": "java.lang.String",
+      "description": "gRPC server host."
+    },
+    {
+      "name": "grpc.clients.*.port",
+      "type": "java.lang.Integer",
+      "description": "gRPC server port."
+    }
+  ]
+}
