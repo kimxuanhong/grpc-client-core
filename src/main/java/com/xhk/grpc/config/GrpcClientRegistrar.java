@@ -48,7 +48,20 @@ public class GrpcClientRegistrar implements ImportBeanDefinitionRegistrar {
                     BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(GrpcClientFactoryBean.class);
                     builder.addConstructorArgValue(clazz);
                     builder.addConstructorArgValue(annotation.stub());
-                    builder.addConstructorArgValue(annotation.interceptors());
+                    
+                    // Kiểm tra xem có sử dụng cả hai cách không
+                    if (annotation.interceptorsConfig().length > 0 && annotation.interceptors().length > 0) {
+                        // Sử dụng cả hai cách
+                        builder.addConstructorArgValue(annotation.interceptors());
+                        builder.addConstructorArgValue(annotation.interceptorsConfig());
+                    } else if (annotation.interceptorsConfig().length > 0) {
+                        // Chỉ sử dụng cách mới
+                        builder.addConstructorArgValue(annotation.interceptorsConfig());
+                    } else {
+                        // Chỉ sử dụng cách cũ
+                        builder.addConstructorArgValue(annotation.interceptors());
+                    }
+                    
                     builder.addPropertyValue("url", annotation.url());
 
                     registry.registerBeanDefinition(className, builder.getBeanDefinition());

@@ -12,5 +12,13 @@ public @interface GrpcClient {
 
     Class<?> stub();
 
+    /**
+     * Các interceptor class trực tiếp (cách cũ)
+     */
     Class<? extends io.grpc.ClientInterceptor>[] interceptors() default {};
+    
+    /**
+     * Các interceptor với cấu hình chi tiết (cách mới)
+     */
+    GrpcInterceptor[] interceptorsConfig() default {};
 }
