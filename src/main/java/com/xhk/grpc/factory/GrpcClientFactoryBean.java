@@ -1,7 +1,10 @@
 package com.xhk.grpc.factory;
 
 
+import com.xhk.grpc.proxy.DeadlineInterceptor;
 import com.xhk.grpc.proxy.GrpcLogClientInterceptor;
+import com.xhk.grpc.proxy.HeaderClientInterceptor;
+import com.xhk.grpc.utils.EnvUtils;
 import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -10,6 +13,8 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.Map;
 
 public class GrpcClientFactoryBean<T> implements FactoryBean<T>, EnvironmentAware {
     private final Class<T> clientInterface;
@@ -42,12 +47,19 @@ public class GrpcClientFactoryBean<T> implements FactoryBean<T>, EnvironmentAwar
                 .forTarget(url)
                 .usePlaintext();
 
+        long defaultTimeout = Long.parseLong(environment.getProperty(key + ".default-timeout-ms", "5000"));
+        channelBuilder.intercept(new DeadlineInterceptor(Duration.ofMillis(defaultTimeout)));
+
         channelBuilder.intercept(new GrpcLogClientInterceptor());
         if (interceptorClasses != null) {
             for (Class<? extends ClientInterceptor> clazz : interceptorClasses) {
                 channelBuilder.intercept(clazz.getDeclaredConstructor().newInstance());
             }
         }
+
+        Map<String, String> headers = EnvUtils.getClientProperties(key + ".headers", environment);
+        channelBuilder.intercept(new HeaderClientInterceptor(headers));
+
         ManagedChannel channel = channelBuilder.build();
 
         // 2. Tìm outer class (GreetingServiceGrpc)
