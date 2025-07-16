@@ -1,5 +1,7 @@
 package com.xhk.grpc.annotation;
 
+import com.xhk.grpc.middleware.Middleware;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,13 +14,5 @@ public @interface GrpcClient {
 
     Class<?> stub();
 
-    /**
-     * Các interceptor class trực tiếp (cách cũ)
-     */
-    Class<? extends io.grpc.ClientInterceptor>[] interceptors() default {};
-    
-    /**
-     * Các interceptor với cấu hình chi tiết (cách mới)
-     */
-    GrpcInterceptor[] interceptorsConfig() default {};
+    Class<? extends Middleware>[] middlewares() default {};
 }
